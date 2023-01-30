@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@microsoft/api-extractor": "^7.34.0",
-    "fast-glob": "^3.2.12"
+    "fast-glob": "^3.2.12",
+    "tsc-alias": "^1.8.2"
   }
 }

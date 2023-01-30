@@ -6,15 +6,10 @@ import {
 import glob from 'fast-glob';
 import { readFile, rm } from 'fs/promises';
 import { join } from 'path';
+import { replaceTscAliasPaths } from 'tsc-alias';
 import { CompilerOptions, convertCompilerOptionsFromJson, createProgram } from 'typescript';
 
 export interface BundleDtsOptions {
-  /**
-   * Watch source file changes and automatically re-build *.d.ts
-   *
-   * @default false
-   */
-  watch?: boolean;
   /**
    * Path to tsconfig.json
    *
@@ -53,7 +48,6 @@ export interface BundleDtsOptions {
  * @see https://api-extractor.com/pages/setup/configure_rollup/
  */
 export async function bundleDts({
-  watch = false,
   tsconfigJsonPath = join(process.cwd(), 'tsconfig.json'),
   entry = 'index',
   include = 'src/**/*.{ts,tsx}',
@@ -89,6 +83,13 @@ export async function bundleDts({
   const program = createProgram(fileNames, compilerOptions);
   program.emit();
 
+  // Convert tsconfig.json paths (alias) to relative (real) path
+  await replaceTscAliasPaths({
+    configFile: tsconfigJsonPath,
+    declarationDir: rawDir,
+    outDir: rawDir,
+  });
+
   // Bundle d.ts files
   const extractorOptions: IExtractorConfigPrepareOptions = {
     configObjectFullPath: join(process.cwd(), 'api-extractor.json'),
@@ -110,6 +111,6 @@ export async function bundleDts({
   if (extractorResult.succeeded) {
     await rm(rawDir, { recursive: true, force: true });
   } else {
-    throw 'failed';
+    throw new Error('Bundling TypeScript declarations (*.d.ts) failed');
   }
 }
