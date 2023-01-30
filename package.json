@@ -1,0 +1,66 @@
+{
+  "name": "@guoyunhe/bundle-dts",
+  "version": "1.0.0",
+  "description": "Compile TypeScript declarations (*.d.ts) and bundle into a single file",
+  "keywords": [
+    "typescript",
+    "tsc",
+    "types",
+    "declaration",
+    "compile",
+    "build",
+    "watch",
+    "node"
+  ],
+  "homepage": "https://github.com/guoyunhe/bundle-dts#readme",
+  "bugs": {
+    "url": "https://github.com/guoyunhe/bundle-dts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guoyunhe/bundle-dts.git"
+  },
+  "funding": "https://github.com/sponsors/guoyunhe",
+  "author": {
+    "name": "Guo Yunhe",
+    "email": "i@guoyunhe.me"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "typings": "dist/dts/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node-scripts build",
+    "format": "node-scripts format",
+    "lint": "node-scripts lint",
+    "test": "node-scripts test",
+    "watch": "node-scripts watch"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true
+  },
+  "eslintConfig": {
+    "extends": "@guoyunhe/node-scripts"
+  },
+  "jest": {
+    "preset": "@guoyunhe/node-scripts",
+    "testTimeout": 10000
+  },
+  "devDependencies": {
+    "@guoyunhe/node-scripts": "^1.0.0",
+    "@tsconfig/node16": "^1.0.0",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^16.0.0",
+    "typescript": "^4.0.0"
+  },
+  "dependencies": {
+    "@microsoft/api-extractor": "^7.34.0",
+    "fast-glob": "^3.2.12"
+  }
+}
