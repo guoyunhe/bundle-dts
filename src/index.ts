@@ -37,7 +37,7 @@ export interface BundleDtsOptions {
   /**
    * File path of final *.d.ts output
    *
-   * @default `${dist}/index.d.ts`
+   * @default 'dist/index.d.ts'
    */
   outFile?: string;
 }
