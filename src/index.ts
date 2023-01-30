@@ -15,7 +15,7 @@ export interface BundleDtsOptions {
    *
    * @default 'tsconfig.json'
    */
-  tsconfigJsonPath?: string;
+  tsconfigFilePath?: string;
   /**
    * Entry file to bundle (no extension)
    *
@@ -48,7 +48,7 @@ export interface BundleDtsOptions {
  * @see https://api-extractor.com/pages/setup/configure_rollup/
  */
 export async function bundleDts({
-  tsconfigJsonPath = join(process.cwd(), 'tsconfig.json'),
+  tsconfigFilePath = join(process.cwd(), 'tsconfig.json'),
   entry = 'index',
   include = 'src/**/*.{ts,tsx}',
   exclude = ['*.test.ts', '*.spec.ts', '*.test.tsx', '*.spec.tsx'],
@@ -61,7 +61,7 @@ export async function bundleDts({
   // Read tsconfig.json
   let tsconfig = {};
   try {
-    tsconfig = await readFile(tsconfigJsonPath, 'utf-8');
+    tsconfig = await readFile(tsconfigFilePath, 'utf-8');
   } catch (e) {
     //
   }
@@ -85,7 +85,7 @@ export async function bundleDts({
 
   // Convert tsconfig.json paths (alias) to relative (real) path
   await replaceTscAliasPaths({
-    configFile: tsconfigJsonPath,
+    configFile: tsconfigFilePath,
     declarationDir: rawDir,
     outDir: rawDir,
   });
@@ -98,7 +98,7 @@ export async function bundleDts({
       mainEntryPointFilePath: rawEntry,
       projectFolder: process.cwd(),
       compiler: {
-        tsconfigFilePath: tsconfigJsonPath,
+        tsconfigFilePath,
       },
       dtsRollup: {
         enabled: true,
