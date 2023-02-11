@@ -55,6 +55,7 @@ export async function bundleDts({
   outFile = join(process.cwd(), 'dist', 'index.d.ts'),
 }: BundleDtsOptions) {
   // Temp directory for un-bundled .d.ts files
+  // Must NOT be placed in node_modules/.cache. Otherwise, files will be ignored.
   const rawDir = join(process.cwd(), '.bundle-dts');
   const rawEntry = join(rawDir, entry + '.d.ts');
 
