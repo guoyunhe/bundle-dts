@@ -4,7 +4,7 @@ import {
   IExtractorConfigPrepareOptions,
 } from '@microsoft/api-extractor';
 import glob from 'fast-glob';
-import { readFile, rm } from 'fs/promises';
+import { readFile, rename, rm } from 'fs/promises';
 import { join } from 'path';
 import { replaceTscAliasPaths } from 'tsc-alias';
 import { CompilerOptions, convertCompilerOptionsFromJson, createProgram } from 'typescript';
@@ -47,13 +47,14 @@ export interface BundleDtsOptions {
  * @see https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
  * @see https://api-extractor.com/pages/setup/configure_rollup/
  */
-export async function bundleDts({
-  tsconfigFilePath = join(process.cwd(), 'tsconfig.json'),
-  entry = 'index',
-  include = 'src/**/*.{ts,tsx}',
-  exclude = ['*.test.ts', '*.spec.ts', '*.test.tsx', '*.spec.tsx'],
-  outFile = join(process.cwd(), 'dist', 'index.d.ts'),
-}: BundleDtsOptions) {
+export async function bundleDts(options?: BundleDtsOptions) {
+  const {
+    entry = 'index',
+    include = 'src/**/*.{ts,tsx}',
+    exclude = ['*.test.ts', '*.spec.ts', '*.test.tsx', '*.spec.tsx'],
+    outFile = join(process.cwd(), 'dist', 'index.d.ts'),
+    tsconfigFilePath = join(process.cwd(), 'tsconfig.json'),
+  } = options || {};
   // Temp directory for un-bundled .d.ts files
   // Must NOT be placed in node_modules/.cache. Otherwise, files will be ignored.
   const rawDir = join(process.cwd(), '.bundle-dts');
@@ -91,27 +92,31 @@ export async function bundleDts({
     outDir: rawDir,
   });
 
-  // Bundle d.ts files
-  const extractorOptions: IExtractorConfigPrepareOptions = {
-    configObjectFullPath: join(process.cwd(), 'api-extractor.json'),
-    packageJsonFullPath: join(process.cwd(), 'package.json'),
-    configObject: {
-      mainEntryPointFilePath: rawEntry,
-      projectFolder: process.cwd(),
-      compiler: {
-        tsconfigFilePath,
-      },
-      dtsRollup: {
-        enabled: true,
-        untrimmedFilePath: outFile,
-      },
-    },
-  };
-  const extractorConfig = ExtractorConfig.prepare(extractorOptions);
-  const extractorResult = Extractor.invoke(extractorConfig);
-  if (extractorResult.succeeded) {
-    await rm(rawDir, { recursive: true, force: true });
+  // Skip bundle if here is no more than one *.d.ts file
+  if (fileNames.length < 2) {
+    rename(rawEntry, outFile);
   } else {
-    throw new Error('Bundling TypeScript declarations (*.d.ts) failed');
+    // Bundle d.ts files
+    const extractorOptions: IExtractorConfigPrepareOptions = {
+      configObjectFullPath: join(process.cwd(), 'api-extractor.json'),
+      packageJsonFullPath: join(process.cwd(), 'package.json'),
+      configObject: {
+        mainEntryPointFilePath: rawEntry,
+        projectFolder: process.cwd(),
+        compiler: {
+          tsconfigFilePath,
+        },
+        dtsRollup: {
+          enabled: true,
+          untrimmedFilePath: outFile,
+        },
+      },
+    };
+    const extractorConfig = ExtractorConfig.prepare(extractorOptions);
+    const extractorResult = Extractor.invoke(extractorConfig);
+    if (!extractorResult.succeeded) {
+      throw new Error('Bundling TypeScript declarations (*.d.ts) failed');
+    }
   }
+  await rm(rawDir, { recursive: true, force: true });
 }
