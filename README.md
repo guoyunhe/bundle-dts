@@ -20,19 +20,19 @@ By default, it scans `src` and bundles `src/index.ts` into `dist/index.d.ts`.
 
 ### entry: string
 
-Default: `index`
+Default: `src/index.ts`.
 
-If your entry file is not `src/index.ts(x)` but `src/main.ts(x)`, you should set `entry` to `main`.
+The entry point TypeScript file.
 
 ```ts
-bundleDts({ entry: 'main' });
+bundleDts({ entry: 'src/main.ts' });
 ```
 
 ### outFile: string
 
 Default: `dist/index.d.ts`
 
-Change the path of output file.
+The path of output declaration file.
 
 ```ts
 bundleDts({ outFile: 'out/main.d.ts' });

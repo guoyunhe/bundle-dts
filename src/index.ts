@@ -49,7 +49,7 @@ export interface BundleDtsOptions {
  */
 export async function bundleDts(options?: BundleDtsOptions) {
   const {
-    entry = 'index',
+    entry = 'src/index.ts',
     include = 'src/**/*.{ts,tsx}',
     exclude = ['*.test.ts', '*.spec.ts', '*.test.tsx', '*.spec.tsx'],
     outFile = join(process.cwd(), 'dist', 'index.d.ts'),
@@ -58,7 +58,7 @@ export async function bundleDts(options?: BundleDtsOptions) {
   // Temp directory for un-bundled .d.ts files
   // Must NOT be placed in node_modules/.cache. Otherwise, files will be ignored.
   const rawDir = join(process.cwd(), '.bundle-dts');
-  const rawEntry = join(rawDir, entry + '.d.ts');
+  const rawEntry = join(rawDir, entry.replace(/\.tsx?$/, '.d.ts'));
 
   // Read tsconfig.json
   let tsconfig = {};
@@ -75,6 +75,7 @@ export async function bundleDts(options?: BundleDtsOptions) {
     declaration: true,
     emitDeclarationOnly: true,
     outDir: rawDir,
+    rootDir: process.cwd(),
   };
 
   const fileNames = await glob(include, {
@@ -94,7 +95,7 @@ export async function bundleDts(options?: BundleDtsOptions) {
 
   // Skip bundle if here is no more than one *.d.ts file
   if (fileNames.length < 2) {
-    rename(rawEntry, outFile);
+    await rename(rawEntry, outFile);
   } else {
     // Bundle d.ts files
     const extractorOptions: IExtractorConfigPrepareOptions = {
