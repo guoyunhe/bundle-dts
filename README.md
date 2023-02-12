@@ -27,3 +27,13 @@ If your entry file is not `src/index.ts(x)` but `src/main.ts(x)`, you should set
 ```ts
 bundleDts({ entry: 'main' });
 ```
+
+### outFile: string
+
+Default: `dist/index.d.ts`
+
+Change the path of output file.
+
+```ts
+bundleDts({ outFile: 'out/main.d.ts' });
+```
