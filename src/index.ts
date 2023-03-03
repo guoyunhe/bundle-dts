@@ -51,7 +51,7 @@ export async function bundleDts(options?: BundleDtsOptions) {
   const {
     entry = 'src/index.ts',
     include = 'src/**/*.{ts,tsx}',
-    exclude = ['*.test.ts', '*.spec.ts', '*.test.tsx', '*.spec.tsx'],
+    exclude = ['**/*.test.ts', '**/*.spec.ts', '**/*.test.tsx', '**/*.spec.tsx'],
     outFile = join(process.cwd(), 'dist', 'index.d.ts'),
     tsconfigFilePath = join(process.cwd(), 'tsconfig.json'),
   } = options || {};
